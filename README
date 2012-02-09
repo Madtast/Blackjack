@@ -1,7 +1,12 @@
-Blackjack by Paul Serra, all rights to this game as currently reserved.
+Blackjack by Paul Serra, all rights to this game are currently reserved.
 If you would like to use this code for anything other than personal use
 email me at Addiction2Code@Gmail.com for rights.
 
 Run the program, the it's pretty straight forward.
+At the end of your plays, the game will display your winning ratio.
+This can be a good tool to find out if on average you're winning.
+
+* This program uses a virtual deck of cards, so it is pretty accurate.
+* The cards are shuffled between each game.
 
 Update are on the way!

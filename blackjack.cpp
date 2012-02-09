@@ -120,7 +120,7 @@ int countPoints(char cards[10][2], int n) /*count points for Blackjack, cards is
     {
       points += 10;
     }
-    else if(cards[i][0] == '1')
+    else if(cards[i][0] == 'A')
     {
       if(points+11 > 21)
         points += 1;
@@ -170,6 +170,7 @@ int main(void)
 
   srand(time(NULL));
   
+  int game = 0, player_wins = 0, player_ties = 0, player_losses = 0;
   int player_hit = 0, opponent_hit = 0, player_total = 0, opponent_total = 0, off_top = 0;
   char choice[2], player_card[10][2], opponent_card[10][2];
   Deck cards;
@@ -178,9 +179,12 @@ int main(void)
 
   //Hit first time
   choice[0] = 'H';
-  
+
+  cout << "\nWelcome to Blackjack!\n";
+
   while(choice[0] != 'Q') /*Keep playing until the user make choice Q*/
   {
+    game++; /*Incease game number by one*/
     /*Each turn, shuffle the cards */
     cards.shuffle(); /*you can go without this but you should stop off_top from setting to zero or you'll get the same cards each run*/
     
@@ -217,21 +221,25 @@ int main(void)
     {
       cout << "\nThe Computer Has: " << opponent_total << "\n";
       cout << "You Have : " << player_total << "\n\n";
-      if(opponent_total > player_total && opponent_total <= 21)
+      if((opponent_total > player_total && opponent_total <= 21) || (opponent_total <= 21 && player_total > 21))
       {
         cout << "You LOST!!!\n\n";
+        player_losses++;
       }
       else if(player_total > 21 && opponent_total > 21)
       {
-        cout << "You both BUSTED!!!";
+        cout << "You both BUSTED!!!\n\n";
+        player_ties++;
       }
       else if(player_total == opponent_total)
       {
         cout << "It's a DRAW!!!\n\n";
+        player_ties++;
       }
       else
       {
         cout << "You WON!!!\n\n";
+        player_wins++;
       }
       
       cout << "Type C to continue or Q to quit: ";
@@ -250,5 +258,9 @@ int main(void)
       opponent_total = 0, player_hit = 0, player_total = 0, opponent_hit = 0, off_top = 0;
     }
   }
+
+  cout << "\nOut of all " << game << " games played, you ranked the following!\n";
+  cout << "Wins/Games & Losses/Games: " << player_wins << "/" << game << " & " << player_losses << "/" << game << "\n";
+  cout << "Winning ratio: " << ((float)player_wins / ((float)game-(float)player_ties)) * 100 << "%\n\n";
   return 0;
 }
