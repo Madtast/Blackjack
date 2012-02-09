@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstdlib>
-//#include <sstream>
 #include <string>
 #include <ctime>
 
@@ -9,9 +8,7 @@ using namespace std;
 string niceCardName(char code[]) {
   char nice_num[6];
   char nice_suite[8];
-  //stringstream tmp;
   char nice_name[20];
-  //string name;
 
   if(code[0] == 'A')
     strncpy(nice_num, "Ace", 3);
@@ -48,10 +45,6 @@ string niceCardName(char code[]) {
   }
   else
   { }
-
-  //strncpy(nice_name, nice_num, sizeof(nice_num));
-  //strncat(nice_name, " of ", 4);
-  //strncat(nice_name, nice_suite, sizeof(nice_suite));
 
   return nice_name;
 }
@@ -106,7 +99,7 @@ void Deck::init() {
   }
 }
 
-int countPoints(char cards[10][2], int n)
+int countPoints(char cards[10][2], int n) /*count points for Blackjack, cards is your array of cards, and n is the number of cards in your hand*/
 {
   int points = 0;
   for (int i=0; i<=n; i++)
@@ -186,19 +179,20 @@ int main(void)
   //Hit first time
   choice[0] = 'H';
   
-  while(choice[0] != 'Q')
+  while(choice[0] != 'Q') /*Keep playing until the user make choice Q*/
   {
-    cards.shuffle();
-    while(opponent_total <= ((rand() % 6) + 12))
+    /*Each turn, shuffle the cards */
+    cards.shuffle(); /*you can go without this but you should stop off_top from setting to zero or you'll get the same cards each run*/
+    
+    while(opponent_total <= ((rand() % 6) + 12)) /*Each time we randomize the limit to stand at (within limits)*/
     {
-      strcpy(opponent_card[opponent_hit], cards.pull(off_top));
-      opponent_hit++; off_top++;
-      opponent_total = countPoints(opponent_card, opponent_hit-1);
+      strcpy(opponent_card[opponent_hit], cards.pull(off_top)); /*take card off top of stack and store it in opponent_card array with the rest of their cards*/
+      opponent_hit++; off_top++; /*increase the amount of times the opponent hit and the card position taken from top*/
+      opponent_total = countPoints(opponent_card, opponent_hit-1); /*calulate current card values*/
     }
-    //cout << "Your opponent hit " << opponent_hit << " times.\n";
-
-        
-    do
+    
+    /*This Section is for the player*/
+    do /*do the following while either the user or computer chose to hit*/
     {
       strncpy(player_card[player_hit], cards.pull(off_top), 2);
       cout << "\nPulling Card #" << off_top << " off the top of the deck!\n";
@@ -219,7 +213,7 @@ int main(void)
       //cout << off_top;
     } while(choice[0] == 'H');
     
-    if(choice[0] == 'S')
+    if(choice[0] == 'S') /*If either you or the computer chose to stand*/
     {
       cout << "\nThe Computer Has: " << opponent_total << "\n";
       cout << "You Have : " << player_total << "\n\n";
