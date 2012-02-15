@@ -55,14 +55,15 @@ class Deck {
   int b, card[52];
   public:
     const char * pull(int x) { return map_card[card[x]]; }
+    void display();
     void shuffle();
     void init();
 };
 
 void Deck::shuffle() {
-  for (int i=1; i<=(52); i++)
+  for (int i=0; i<(52); i++)
   {
-    int r = i + (rand() % 52-i);
+    int r = i + (rand() % 51-i);
     int temp = card[i]; card[i] = card[r]; card[r] = temp;
   }
 }
@@ -80,22 +81,30 @@ void Deck::init() {
     for (int j=1; j<=13; j++)
     {
       if(j == 1)
-        sprintf(map_card[(b+j)], "A%c", a);
+        sprintf(map_card[(b+j)-1], "A%c", a);
       else if(j == 10)
-        sprintf(map_card[(b+j)], "T%c", a);
+        sprintf(map_card[(b+j)-1], "T%c", a);
       else if(j == 11)
-        sprintf(map_card[(b+j)], "J%c", a);
+        sprintf(map_card[(b+j)-1], "J%c", a);
       else if(j == 12)
-        sprintf(map_card[(b+j)], "Q%c", a);
+        sprintf(map_card[(b+j)-1], "Q%c", a);
       else if(j == 13)
-        sprintf(map_card[(b+j)], "K%c", a);
+        sprintf(map_card[(b+j)-1], "K%c", a);
       else
-        sprintf(map_card[(b+j)], "%d%c", j, a);
+        sprintf(map_card[(b+j)-1], "%d%c", j, a);
     }
   }
   for (int k=1; k<=52; k++) /*Fill array in order*/
   {
     card[k] = k;
+  }
+}
+
+void Deck::display() {
+  int i = 0;
+  for(i=0;i<52;i++)
+  {
+    cout << i << ": " << pull(i) << "\n";
   }
 }
 
@@ -175,7 +184,7 @@ int main(void)
   char choice[2], player_card[10][2], opponent_card[10][2];
   Deck cards;
   cards.init();
-  cards.shuffle();
+  //cards.shuffle(); /*comment out unless you feel like double shuffling*/
 
   //Hit first time
   choice[0] = 'H';
@@ -187,7 +196,7 @@ int main(void)
     game++; /*Incease game number by one*/
     /*Each turn, shuffle the cards */
     cards.shuffle(); /*you can go without this but you should stop off_top from setting to zero or you'll get the same cards each run*/
-    
+    cards.display();
     while(opponent_total <= ((rand() % 6) + 12)) /*Each time we randomize the limit to stand at (within limits)*/
     {
       strcpy(opponent_card[opponent_hit], cards.pull(off_top)); /*take card off top of stack and store it in opponent_card array with the rest of their cards*/
