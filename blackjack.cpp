@@ -196,7 +196,6 @@ int main(void)
     game++; /*Incease game number by one*/
     /*Each turn, shuffle the cards */
     cards.shuffle(); /*you can go without this but you should stop off_top from setting to zero or you'll get the same cards each run*/
-    cards.display();
     while(opponent_total <= ((rand() % 6) + 12)) /*Each time we randomize the limit to stand at (within limits)*/
     {
       strcpy(opponent_card[opponent_hit], cards.pull(off_top)); /*take card off top of stack and store it in opponent_card array with the rest of their cards*/
