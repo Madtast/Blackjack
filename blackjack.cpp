@@ -1,9 +1,111 @@
 #include <iostream>
-#include <cstdlib>
-#include <string>
-#include <ctime>
+#include <cstdio>
+#include "blackjack.h" /*Includes Deck class and related functions*/
 
 using namespace std;
+
+/*Declare Functions*/
+string niceCardName(char code[]);
+int countPoints(char cards[10][2], int n);
+
+/*Main Program*/
+int main(void)
+{
+  //Initialize
+  srand(time(NULL));
+  
+  int game = 0, player_wins = 0, player_ties = 0, player_losses = 0;
+  int player_hit = 0, opponent_hit = 0, player_total = 0, opponent_total = 0, off_top = 0;
+  char choice[2], player_card[10][2], opponent_card[10][2];
+  Deck cards;
+  //cards.shuffle(); /*comment out unless you feel like double shuffling*/
+
+  //Hit first time
+  choice[0] = 'H';
+
+  cout << "\nWelcome to Blackjack!\n";
+
+  while(choice[0] != 'Q') /*Keep playing until the user make choice Q*/
+  {
+    game++; /*Incease game number by one*/
+    /*Each turn, shuffle the cards */
+    cards.shuffle(); /*you can go without this but you should stop off_top from setting to zero or you'll get the same cards each run*/
+    while(opponent_total <= ((rand() % 6) + 12)) /*Each time we randomize the limit to stand at (within limits)*/
+    {
+      strcpy(opponent_card[opponent_hit], cards.pull(off_top)); /*take card off top of stack and store it in opponent_card array with the rest of their cards*/
+      opponent_hit++; off_top++; /*increase the amount of times the opponent hit and the card position taken from top*/
+      opponent_total = countPoints(opponent_card, opponent_hit-1); /*calulate current card values*/
+    }
+    
+    /*This Section is for the player*/
+    do /*do the following while either the user or computer chose to hit*/
+    {
+      strncpy(player_card[player_hit], cards.pull(off_top), 2);
+      cout << "\nPulling Card #" << off_top << " off the top of the deck!\n";
+      cout << "Card Pulled is " << niceCardName(player_card[player_hit]) << "\n\n";
+      player_total = countPoints(player_card, player_hit);
+      if(player_total > 21)
+      {
+        choice[0] = 'S';
+        cout << "BUST! You have: " << player_total << "\n\n";
+      }
+      else
+      {
+        cout << "You have: " << player_total << "\n\n";
+        cout << "Enter H to hit or S to stand: ";
+        cin >> choice;
+      }
+      player_hit++; off_top++;
+      //cout << off_top;
+    } while(toupper(choice[0]) == 'H');
+    
+    if(toupper(choice[0]) == 'S') /*If either you or the computer chose to stand*/
+    {
+      cout << "\nThe Computer Has: " << opponent_total << "\n";
+      cout << "You Have : " << player_total << "\n\n";
+      if((opponent_total > player_total && opponent_total <= 21) || (opponent_total <= 21 && player_total > 21))
+      {
+        cout << "You LOST!!!\n\n";
+        player_losses++;
+      }
+      else if(player_total > 21 && opponent_total > 21)
+      {
+        cout << "You both BUSTED!!!\n\n";
+        player_ties++;
+      }
+      else if(player_total == opponent_total)
+      {
+        cout << "It's a DRAW!!!\n\n";
+        player_ties++;
+      }
+      else
+      {
+        cout << "You WON!!!\n\n";
+        player_wins++;
+      }
+      
+      cout << "Type C to continue or Q to quit: ";
+      cin >> choice[0];
+      
+      for(int i=0; i<=player_hit; i++)
+      {
+        player_card[i][0] = 0;
+        player_card[i][1] = 0;
+      }
+      for(int i=0; i<=opponent_hit; i++)
+      {
+        opponent_card[i][0] = 0;
+        opponent_card[i][1] = 0;
+      }
+      opponent_total = 0, player_hit = 0, player_total = 0, opponent_hit = 0, off_top = 0;
+    }
+  }
+
+  cout << "\nOut of all " << game << " games played, you ranked the following!\n";
+  cout << "Wins/Games & Losses/Games: " << player_wins << "/" << game << " & " << player_losses << "/" << game << "\n";
+  cout << "Winning ratio: " << ((float)player_wins / ((float)game-(float)player_ties)) * 100 << "%\n\n";
+  return 0;
+}
 
 string niceCardName(char code[]) {
   char nice_num[6];
@@ -47,65 +149,6 @@ string niceCardName(char code[]) {
   { }
 
   return nice_name;
-}
-
-class Deck {
-  string buffer;
-  char map_card[54][4];
-  int b, card[52];
-  public:
-    const char * pull(int x) { return map_card[card[x]]; }
-    void display();
-    void shuffle();
-    void init();
-};
-
-void Deck::shuffle() {
-  for (int i=0; i<(52); i++)
-  {
-    int r = i + (rand() % 51-i);
-    int temp = card[i]; card[i] = card[r]; card[r] = temp;
-  }
-}
-
-void Deck::init() {
-  //Requires ctime
-  char a = 0;
-  for (int i=0; i<4; i++)
-  {
-    char name[10];
-    if(i == 0) { a = 'S'; b = 0; }
-    if(i == 1) { a = 'H'; b = 13; }
-    if(i == 2) { a = 'D'; b = 26; }
-    if(i == 3) { a = 'C'; b = 39; }
-    for (int j=1; j<=13; j++)
-    {
-      if(j == 1)
-        sprintf(map_card[(b+j)-1], "A%c", a);
-      else if(j == 10)
-        sprintf(map_card[(b+j)-1], "T%c", a);
-      else if(j == 11)
-        sprintf(map_card[(b+j)-1], "J%c", a);
-      else if(j == 12)
-        sprintf(map_card[(b+j)-1], "Q%c", a);
-      else if(j == 13)
-        sprintf(map_card[(b+j)-1], "K%c", a);
-      else
-        sprintf(map_card[(b+j)-1], "%d%c", j, a);
-    }
-  }
-  for (int k=1; k<=52; k++) /*Fill array in order*/
-  {
-    card[k] = k;
-  }
-}
-
-void Deck::display() {
-  int i = 0;
-  for(i=0;i<52;i++)
-  {
-    cout << i << ": " << pull(i) << "\n";
-  }
 }
 
 int countPoints(char cards[10][2], int n) /*count points for Blackjack, cards is your array of cards, and n is the number of cards in your hand*/
@@ -170,105 +213,4 @@ int countPoints(char cards[10][2], int n) /*count points for Blackjack, cards is
     }
   }
   return points;
-}
-
-int main(void)
-{
-
-  //Initialize
-
-  srand(time(NULL));
-  
-  int game = 0, player_wins = 0, player_ties = 0, player_losses = 0;
-  int player_hit = 0, opponent_hit = 0, player_total = 0, opponent_total = 0, off_top = 0;
-  char choice[2], player_card[10][2], opponent_card[10][2];
-  Deck cards;
-  cards.init();
-  //cards.shuffle(); /*comment out unless you feel like double shuffling*/
-
-  //Hit first time
-  choice[0] = 'H';
-
-  cout << "\nWelcome to Blackjack!\n";
-
-  while(choice[0] != 'Q') /*Keep playing until the user make choice Q*/
-  {
-    game++; /*Incease game number by one*/
-    /*Each turn, shuffle the cards */
-    cards.shuffle(); /*you can go without this but you should stop off_top from setting to zero or you'll get the same cards each run*/
-    while(opponent_total <= ((rand() % 6) + 12)) /*Each time we randomize the limit to stand at (within limits)*/
-    {
-      strcpy(opponent_card[opponent_hit], cards.pull(off_top)); /*take card off top of stack and store it in opponent_card array with the rest of their cards*/
-      opponent_hit++; off_top++; /*increase the amount of times the opponent hit and the card position taken from top*/
-      opponent_total = countPoints(opponent_card, opponent_hit-1); /*calulate current card values*/
-    }
-    
-    /*This Section is for the player*/
-    do /*do the following while either the user or computer chose to hit*/
-    {
-      strncpy(player_card[player_hit], cards.pull(off_top), 2);
-      cout << "\nPulling Card #" << off_top << " off the top of the deck!\n";
-      cout << "Card Pulled is " << niceCardName(player_card[player_hit]) << "\n\n";
-      player_total = countPoints(player_card, player_hit);
-      if(player_total > 21)
-      {
-        choice[0] = 'S';
-        cout << "BUST! You have: " << player_total << "\n\n";
-      }
-      else
-      {
-        cout << "You have: " << player_total << "\n\n";
-        cout << "Enter H to hit or S to stand: ";
-        cin >> choice;
-      }
-      player_hit++; off_top++;
-      //cout << off_top;
-    } while(choice[0] == 'H');
-    
-    if(choice[0] == 'S') /*If either you or the computer chose to stand*/
-    {
-      cout << "\nThe Computer Has: " << opponent_total << "\n";
-      cout << "You Have : " << player_total << "\n\n";
-      if((opponent_total > player_total && opponent_total <= 21) || (opponent_total <= 21 && player_total > 21))
-      {
-        cout << "You LOST!!!\n\n";
-        player_losses++;
-      }
-      else if(player_total > 21 && opponent_total > 21)
-      {
-        cout << "You both BUSTED!!!\n\n";
-        player_ties++;
-      }
-      else if(player_total == opponent_total)
-      {
-        cout << "It's a DRAW!!!\n\n";
-        player_ties++;
-      }
-      else
-      {
-        cout << "You WON!!!\n\n";
-        player_wins++;
-      }
-      
-      cout << "Type C to continue or Q to quit: ";
-      cin >> choice[0];
-      
-      for(int i=0; i<=player_hit; i++)
-      {
-        player_card[i][0] = 0;
-        player_card[i][1] = 0;
-      }
-      for(int i=0; i<=opponent_hit; i++)
-      {
-        opponent_card[i][0] = 0;
-        opponent_card[i][1] = 0;
-      }
-      opponent_total = 0, player_hit = 0, player_total = 0, opponent_hit = 0, off_top = 0;
-    }
-  }
-
-  cout << "\nOut of all " << game << " games played, you ranked the following!\n";
-  cout << "Wins/Games & Losses/Games: " << player_wins << "/" << game << " & " << player_losses << "/" << game << "\n";
-  cout << "Winning ratio: " << ((float)player_wins / ((float)game-(float)player_ties)) * 100 << "%\n\n";
-  return 0;
 }
