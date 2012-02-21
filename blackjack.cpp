@@ -1,23 +1,24 @@
-#include <iostream>
-#include <cstdio>
+#include <iostream> /*Cin & Cout*/
+#include <cstdio> /*For Character Control*/
+#include <ctime> /*For Random*/
 #include "blackjack.h" /*Includes Deck class and related functions*/
 
 using namespace std;
 
 /*Declare Functions*/
-string niceCardName(char code[]);
-int countPoints(char cards[10][2], int n);
+string niceCardName(char[]);
+int countPoints(char[10][2], int);
 
 /*Main Program*/
 int main(void)
 {
   //Initialize
-  srand(time(NULL));
+  srand(time(NULL)); /*Not sure if this should be called here.*/
   
-  int game = 0, player_wins = 0, player_ties = 0, player_losses = 0;
-  int player_hit = 0, opponent_hit = 0, player_total = 0, opponent_total = 0, off_top = 0;
-  char choice[2], player_card[10][2], opponent_card[10][2];
-  Deck cards;
+  int game = 0, player_wins = 0, player_ties = 0, player_losses = 0; /*Initialize all integers to zero*/
+  int player_hit = 0, opponent_hit = 0, player_total = 0, opponent_total = 0, off_top = 0; /*Initialize all integers to zero*/
+  char choice[2], player_card[10][2], opponent_card[10][2]; /*Initalize all character strings/arrays*/
+  Deck cards; /*Create new instace of Deck as cards*/
   //cards.shuffle(); /*comment out unless you feel like double shuffling*/
 
   //Hit first time
@@ -59,10 +60,12 @@ int main(void)
       //cout << off_top;
     } while(toupper(choice[0]) == 'H');
     
-    if(toupper(choice[0]) == 'S') /*If either you or the computer chose to stand*/
+    if(toupper(choice[0]) == 'S') /*If you choose to stand*/
     {
       cout << "\nThe Computer Has: " << opponent_total << "\n";
       cout << "You Have : " << player_total << "\n\n";
+      
+      /*The following IF/ELSE block might be able to be optimized.*/
       if((opponent_total > player_total && opponent_total <= 21) || (opponent_total <= 21 && player_total > 21))
       {
         cout << "You LOST!!!\n\n";
@@ -97,7 +100,7 @@ int main(void)
         opponent_card[i][0] = 0;
         opponent_card[i][1] = 0;
       }
-      opponent_total = 0, player_hit = 0, player_total = 0, opponent_hit = 0, off_top = 0;
+      opponent_total = 0, player_hit = 0, player_total = 0, opponent_hit = 0, off_top = 0; /*Reset for new round*/
     }
   }
 
@@ -107,7 +110,7 @@ int main(void)
   return 0;
 }
 
-string niceCardName(char code[]) {
+string niceCardName(char code[]) { /*This takes the two character code exported by Deck in it's array, such as AH and prints Ace of Hearts*/
   char nice_num[6];
   char nice_suite[8];
   char nice_name[20];
@@ -151,6 +154,7 @@ string niceCardName(char code[]) {
   return nice_name;
 }
 
+/*The countPoints function can be optimized*/
 int countPoints(char cards[10][2], int n) /*count points for Blackjack, cards is your array of cards, and n is the number of cards in your hand*/
 {
   int points = 0;

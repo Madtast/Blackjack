@@ -1,6 +1,9 @@
+// Blackjack by Paul Serra
+// All Rights Reserverd
+// Contact Addiction2Code@Gmail.com for Rights Information
+
 #include <iostream>
 #include <cstdio>
-#include <ctime>
 
 using namespace std;
 
@@ -15,16 +18,7 @@ class Deck {
     void shuffle();
 };
 
-void Deck::shuffle() {
-  for (int i=0; i<(52); i++)
-  {
-    int r = i + (rand() % 51-i);
-    int temp = card[i]; card[i] = card[r]; card[r] = temp;
-  }
-}
-
-Deck::Deck() {
-  //Requires ctime
+Deck::Deck() { /*This is the constructor and takes care of initalizing the deck when an instance of Deck is made.*/
   char a = 0;
   for (int i=0; i<4; i++)
   {
@@ -55,7 +49,16 @@ Deck::Deck() {
   }
 }
 
-void Deck::display() {
+void Deck::shuffle() { /*This code goes through and shuffles the deck card by card.*/
+  //Requires ctime
+  for (int i=0; i<(52); i++)
+  {
+    int r = i + (rand() % 51-i);
+    int temp = card[i]; card[i] = card[r]; card[r] = temp;
+  }
+}
+
+void Deck::display() { /*For debugging purposes this will display the deck.*/
   int i = 0;
   for(i=0;i<52;i++)
   {
